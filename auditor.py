@@ -8,12 +8,19 @@ while True:
         print("Total Failed Entries: ", failedEntries)
         break
 
-    if not userInput.isdigit():
+    try:
+        quantity = int(userInput)
+    except ValueError:
         print("Please enter a valid number.")
         failedEntries += 1
         continue
 
-    inventory += int(userInput)
+    if quantity < 0:
+        print("Please enter a non-negative number.")
+        failedEntries += 1
+        continue
+
+    inventory += quantity
     print(inventory)
     if inventory > 500:
         print("Inventory limit exceeded.")
