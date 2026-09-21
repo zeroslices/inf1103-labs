@@ -32,7 +32,6 @@ def process_delivery(current_total, new_value):
     """
     return current_total + new_value
     
-
 def calculate_tax(amount):
     """
     A new requirement! This function takes a delivery
@@ -45,24 +44,12 @@ def generate_report(total_units, failed_attempts):
     A dedicated function to print
     the final summary.
     """
+    print("Final Report:")
     print("Total Units Processed: ", total_units)
     print("Total Failed Entries: ", failed_attempts)
     return
 
 while True:
-    # userInput = input("Enter a stock quantity or quit: ")
-
-    # if userInput == "quit":
-    #     print("Total Units Processed: ", inventory)
-    #     print("Total Failed Entries: ", failedEntries)
-    #     break
-
-    # try:
-    #     quantity = int(userInput)
-    # except ValueError:
-    #     print("Please enter a valid number.")
-    #     failedEntries += 1
-    #     continue
 
     quantity, failedEntries = get_valid_input(failedEntries)
 
@@ -70,12 +57,10 @@ while True:
         generate_report(inventory, failedEntries)
         break
 
-    # if quantity < 0:
-    #     print("Please enter a non-negative number.")
-    #     failedEntries += 1
-    #     continue
+    print("Tax for this delivery: ", calculate_tax(quantity))
 
     inventory = process_delivery(inventory, quantity)
+
     print("Current Inventory:",inventory, "\n")
     if inventory > 500:
         print("Inventory limit exceeded.")
