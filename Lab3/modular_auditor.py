@@ -30,7 +30,8 @@ def process_delivery(current_total, new_value):
     Calculates the new total and
     returns it.
     """
-    pass
+    return current_total + new_value
+    
 
 def calculate_tax(amount):
     """
@@ -74,7 +75,7 @@ while True:
     #     failedEntries += 1
     #     continue
 
-    inventory += quantity
+    inventory = process_delivery(inventory, quantity)
     print("Current Inventory:",inventory, "\n")
     if inventory > 500:
         print("Inventory limit exceeded.")
