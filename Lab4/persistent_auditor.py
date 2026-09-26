@@ -1,15 +1,25 @@
+import os
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+INVENTORY_FILE = os.path.join(BASE_DIR, "inventory.txt")
 
 def load_inventory():
-    """
-    Loads the inventory from a file.
-    If the file does not exist, it initializes the inventory to 0.
-    """
+    """Returns (total, history). Starts empty if the file is missing."""
+    total = 0
+    history = []
     try:
-        with open("inventory.txt", "r") as file:
-            print(file.read())
-            return int(file.read())
+        with open(INVENTORY_FILE, "r") as file:
+            lines = file.read().splitlines()
     except FileNotFoundError:
-        return 0
+        return total, history
+
+    if lines and lines[0].strip():
+        total = int(lines[0])
+    for line in lines[1:]:
+        if line.strip():
+            idx, item, qty = line.split(",")
+            history.append((int(idx), item, int(qty)))
+    return total, history
 
 def save_inventory(inventory):
     """
@@ -17,8 +27,6 @@ def save_inventory(inventory):
     """
     # with open("inventory.txt", "w") as file:
     #     file.write(str(inventory))
-
-inventory = load_inventory()
 
 def check_valid_input(userInput):
     """
@@ -83,7 +91,8 @@ def generate_report(total_units, failed_attempts):
     return
 
 def main():
-
+    total, transaction_history = load_inventory()
+    print(total, transaction_history)
     failedEntries = 0
     transaction_history = []
     index = 1001
@@ -95,10 +104,10 @@ def main():
 
         
         if quantity == "quit" or itemname == "quit":
-            generate_report(inventory, failedEntries)
+            generate_report(total, failedEntries)
             break
 
-        
+        print(f"New Order Added:\nIndex: {index}, Item: {itemname}, Quantity: {quantity}\n")
         
         transaction_history.append((index, itemname, quantity))
         

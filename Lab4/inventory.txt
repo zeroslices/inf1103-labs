@@ -1,1 +1,4 @@
-12
+6
+1001,Wireless Mouse,2
+1002,Keyboard,1
+1003,USB Cable,3
