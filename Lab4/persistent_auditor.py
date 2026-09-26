@@ -38,11 +38,11 @@ def check_valid_input(userInput):
         quantity = int(userInput)
         if quantity < 0:
             print("Please enter a non-negative number.\n")
-            return False
-        return quantity
+            return None
+        return str(quantity)
     except ValueError:
         print("Please enter a valid number.\n")
-        return False
+        return None
 
 def get_valid_input(failedEntries, option = None):
     """
@@ -54,12 +54,12 @@ def get_valid_input(failedEntries, option = None):
         question = "Product Name"
     userInput = input(f"Enter {question} or quit: ")
 
-    if userInput.lower() == "quit":
+    if check_quit(userInput):
         return userInput, failedEntries
 
     if option == None:
         userInput = check_valid_input(userInput)
-        if userInput == False:
+        if userInput == None:
             failedEntries += 1
             return get_valid_input(failedEntries)
     
@@ -90,20 +90,29 @@ def generate_report(total_units, failed_attempts):
     print("Total Failed Entries: ", failed_attempts)
     return
 
+def check_quit(userInput):
+    """
+    Checks if the user input is "quit".
+    Returns True if it is, False otherwise.
+    """
+    return userInput.lower() == "quit"
 def main():
     total, transaction_history = load_inventory()
-    print(total, transaction_history)
+    # print(total, transaction_history)
     failedEntries = 0
-    transaction_history = []
-    index = 1001
+    index = transaction_history[-1][0] + 1 if transaction_history else 1001
 
     while True:
 
         itemname, failedEntries = get_valid_input(failedEntries, "item")
+
+        if check_quit(itemname):
+            generate_report(total, failedEntries)
+            break
+
         quantity, failedEntries = get_valid_input(failedEntries)
 
-        
-        if quantity == "quit" or itemname == "quit":
+        if check_quit(quantity):
             generate_report(total, failedEntries)
             break
 
