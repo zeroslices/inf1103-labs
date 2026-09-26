@@ -19,32 +19,44 @@ def save_inventory(inventory):
     #     file.write(str(inventory))
 
 inventory = load_inventory()
-failedEntries = 0
-# transaction_history = []
 
-def get_valid_input(failedEntries):
+def check_valid_input(userInput):
+    """
+    Checks if the user input is a valid integer or "quit".
+    Returns True if valid, False otherwise.
+    """
+
+    try:
+        quantity = int(userInput)
+        if quantity < 0:
+            print("Please enter a non-negative number.\n")
+            return False
+        return quantity
+    except ValueError:
+        print("Please enter a valid number.\n")
+        return False
+
+def get_valid_input(failedEntries, option = None):
     """
     Handles the prompt, handles input validation, and
     returns a valid integer or a "quit" signal.
     """
-    userInput = input("Enter a stock quantity or quit: ")
+    question = "Quantity"
+    if option == "item":
+        question = "Product Name"
+    userInput = input(f"Enter {question} or quit: ")
 
-    if userInput == "quit":
+    if userInput.lower() == "quit":
         return userInput, failedEntries
 
-    try:
-        quantity = int(userInput)
-    except ValueError:
-        print("Please enter a valid number.\n")
-        failedEntries += 1
-        return get_valid_input(failedEntries)
-
-    if quantity < 0:
-        print("Please enter a non-negative number.\n")
-        failedEntries += 1
-        return get_valid_input(failedEntries)
-            
-    return quantity, failedEntries
+    if option == None:
+        userInput = check_valid_input(userInput)
+        if userInput == False:
+            failedEntries += 1
+            return get_valid_input(failedEntries)
+    
+    
+    return userInput, failedEntries
 
 def process_delivery(current_total, new_value): 
     """
@@ -70,19 +82,32 @@ def generate_report(total_units, failed_attempts):
     print("Total Failed Entries: ", failed_attempts)
     return
 
-while True:
-    
-    quantity, failedEntries = get_valid_input(failedEntries)
+def main():
 
-    if quantity == "quit":
-        generate_report(inventory, failedEntries)
-        break
+    failedEntries = 0
+    transaction_history = []
+    index = 1001
 
-    print("Tax for this delivery: ", calculate_tax(quantity))
+    while True:
 
-    inventory = process_delivery(inventory, quantity)
+        itemname, failedEntries = get_valid_input(failedEntries, "item")
+        quantity, failedEntries = get_valid_input(failedEntries)
 
-    print("Current Inventory:",inventory, "\n")
-    if inventory > 500:
-        print("Inventory limit exceeded.")
-        break
+        
+        if quantity == "quit" or itemname == "quit":
+            generate_report(inventory, failedEntries)
+            break
+
+        
+        
+        transaction_history.append((index, itemname, quantity))
+        
+        print(f"Transaction History: {transaction_history}\n")
+
+        for index, item, quantity in transaction_history:
+            print(f"Transaction ID: {index}, Item: {item}, Quantity: {quantity}")
+            index += 1
+
+
+if __name__ == "__main__":
+    main()
