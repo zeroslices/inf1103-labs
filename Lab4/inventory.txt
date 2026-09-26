@@ -2,3 +2,5 @@
 1001,Wireless Mouse,2
 1002,Keyboard,1
 1003,USB Cable,3
+1004,keyboard,12
+1005,pencil,20

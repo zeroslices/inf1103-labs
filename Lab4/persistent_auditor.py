@@ -21,12 +21,16 @@ def load_inventory():
             history.append((int(idx), item, int(qty)))
     return total, history
 
-def save_inventory(inventory):
+def save_inventory(total, history):
     """
-    Saves the current inventory to a file.
+    Saves the total and transaction history to inventory.txt.
+    Format: first line is the total, then one 'id,item,qty' line per order.
     """
-    # with open("inventory.txt", "w") as file:
-    #     file.write(str(inventory))
+    with open(INVENTORY_FILE, "w") as file:
+        file.write(f"{total}\n")
+        for idx, item, qty in history:
+            file.write(f"{idx},{item},{qty}\n")
+    print(f"Order successfully saved to {os.path.basename(INVENTORY_FILE)}")
 
 def check_valid_input(userInput):
     """
@@ -39,7 +43,7 @@ def check_valid_input(userInput):
         if quantity < 0:
             print("Please enter a non-negative number.\n")
             return None
-        return str(quantity)
+        return quantity
     except ValueError:
         print("Please enter a valid number.\n")
         return None
@@ -95,7 +99,7 @@ def check_quit(userInput):
     Checks if the user input is "quit".
     Returns True if it is, False otherwise.
     """
-    return userInput.lower() == "quit"
+    return isinstance(userInput, str) and userInput.lower() == "quit"
 def main():
     total, transaction_history = load_inventory()
     # print(total, transaction_history)
@@ -108,23 +112,27 @@ def main():
 
         if check_quit(itemname):
             generate_report(total, failedEntries)
+            save_inventory(total, transaction_history)
             break
 
         quantity, failedEntries = get_valid_input(failedEntries)
 
         if check_quit(quantity):
             generate_report(total, failedEntries)
+            save_inventory(total, transaction_history)
             break
 
         print(f"New Order Added:\nIndex: {index}, Item: {itemname}, Quantity: {quantity}\n")
-        
+
+        total = process_delivery(total, quantity)
+        index += 1
+
         transaction_history.append((index, itemname, quantity))
         
         print(f"Transaction History: {transaction_history}\n")
 
-        for index, item, quantity in transaction_history:
-            print(f"Transaction ID: {index}, Item: {item}, Quantity: {quantity}")
-            index += 1
+        for tid, item, qty in transaction_history:
+            print(f"Transaction ID: {tid}, Item: {item}, Quantity: {qty}")
 
 
 if __name__ == "__main__":
