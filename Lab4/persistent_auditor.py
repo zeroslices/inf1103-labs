@@ -125,15 +125,17 @@ def main():
         print(f"New Order Added:\nIndex: {index}, Item: {itemname}, Quantity: {quantity}\n")
 
         total = process_delivery(total, quantity)
-        index += 1
 
         transaction_history.append((index, itemname, quantity))
+
+        index += 1
         
-        print(f"Transaction History: {transaction_history}\n")
+        # print(f"Transaction History: {transaction_history}\n")
 
         for tid, item, qty in transaction_history:
             print(f"Transaction ID: {tid}, Item: {item}, Quantity: {qty}")
 
+        
 
 if __name__ == "__main__":
     main()
