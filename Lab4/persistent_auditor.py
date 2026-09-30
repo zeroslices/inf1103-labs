@@ -1,7 +1,8 @@
 import os
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-INVENTORY_FILE = os.path.join(BASE_DIR, "inventory.txt")
+DATA_DIR = os.environ.get("DATA_DIR", BASE_DIR)   # Docker sets this to /data
+INVENTORY_FILE = os.path.join(DATA_DIR, "inventory.txt")
 
 def load_inventory():
     """Returns (total, history). Starts empty if the file is missing."""
@@ -12,8 +13,9 @@ def load_inventory():
             lines = file.read().splitlines()
     except FileNotFoundError:
         return total, history
-
-    if lines and lines[0].strip():
+    print(lines)
+    print(lines[0].strip())
+    if len(lines) > 0:
         total = int(lines[0])
     for line in lines[1:]:
         if line.strip():
@@ -107,7 +109,7 @@ def main():
     index = transaction_history[-1][0] + 1 if transaction_history else 1001
 
     while True:
-
+        print(f"Total Units: {total}", f"Transaction History: {transaction_history}\n")
         itemname, failedEntries = get_valid_input(failedEntries, "item")
 
         if check_quit(itemname):

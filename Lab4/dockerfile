@@ -4,4 +4,8 @@ WORKDIR /app
 
 COPY persistent_auditor.py .
 
+ENV DATA_DIR=/data
+ENV PYTHONUNBUFFERED=1
+RUN mkdir -p /data
+
 CMD ["python", "persistent_auditor.py"]
