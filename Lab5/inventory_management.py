@@ -6,7 +6,9 @@ DATA_DIR = os.environ.get("DATA_DIR", BASE_DIR)   # Docker sets this to /data
 INVENTORY_FILE = os.path.join(DATA_DIR, "inventory.json")
 
 def load_inventory():
-    """Returns (total, history). Starts empty if the file is missing."""
+    """
+    Loads the inventory from a JSON file.
+    If the file does not exist, it initializes an empty inventory."""
     history = []
     try:
         with open(INVENTORY_FILE, "r") as file:
@@ -14,91 +16,23 @@ def load_inventory():
             history = data["history"]
             print("inventory.json found.")
     except FileNotFoundError:
-        return history
+        print("inventory.json not found. Starting with empty inventory.")
+    except json.JSONDecodeError:
+        print("Error decoding inventory.json. Starting with empty inventory.")
     print(history)
     print("Inventory loaded successfully." )
     return history
 
 def save_inventory(history):
     """
-    Saves the total and transaction history to inventory.json.
-    Format: first line is the total, then one 'id,item,qty' line per order.
+    Saves the current inventory to a JSON file.
     """
     with open(INVENTORY_FILE, "w") as file:
         contents = {}
         contents["history"] = history
         # print(contents)
         json.dump(contents, file)
-    print(f"Order successfully saved to {os.path.basename(INVENTORY_FILE)}")
-
-def check_valid_input(userInput):
-    """
-    Checks if the user input is a valid integer or "quit".
-    Returns True if valid, False otherwise.
-    """
-
-    try:
-        quantity = int(userInput)
-        if quantity < 0:
-            print("Please enter a non-negative number.\n")
-            return None
-        return quantity
-    except ValueError:
-        print("Please enter a valid number.\n")
-        return None
-
-def get_valid_input(failedEntries, option = None):
-    """
-    Handles the prompt, handles input validation, and
-    returns a valid integer or a "quit" signal.
-    """
-    question = "Quantity"
-    if option == "item":
-        question = "Product Name"
-    userInput = input(f"Enter {question} or quit: ")
-
-    if check_quit(userInput):
-        return userInput, failedEntries
-
-    if option == None:
-        userInput = check_valid_input(userInput)
-        if userInput == None:
-            failedEntries += 1
-            return get_valid_input(failedEntries)
-    
-    
-    return userInput, failedEntries
-
-def process_delivery(current_total, new_value): 
-    """
-    Calculates the new total and
-    returns it.
-    """
-    return current_total + new_value
-    
-def calculate_tax(amount):
-    """
-    A new requirement! This function takes a delivery
-    amount and returns the tax (10% of that specific delivery).
-    """
-    return amount * 0.1
-
-def generate_report(total_units, failed_attempts):
-    """
-    A dedicated function to print
-    the final summary.
-    """
-    print("Final Report:")
-    print("Total Units Processed: ", total_units)
-    print("Total Failed Entries: ", failed_attempts)
-    return
-
-def check_quit(userInput):
-    """
-    Checks if the user input is "quit".
-    Returns True if it is, False otherwise.
-    """
-    return isinstance(userInput, str) and userInput.lower() == "quit"
+    print(f"Inventory saved successfully to {os.path.basename(INVENTORY_FILE)}\n")
 
 def validate_options(input):
     """
@@ -170,7 +104,7 @@ def search_product(transaction_history):
             print(f"ID: {item['id']}\nName: {item['name']}\nPrice: {item['price']}\nStock: {item['stock']}")
         print("----------------------\n")
     else:
-        print("Product not found.\n")
+        print("\nProduct not found.\n")
 
 def show_menu():
     """
@@ -213,8 +147,11 @@ def main():
             case "4":
                 search_product(transaction_history)
             case "5":
-                pass    
+                print("\nSaving inventory...")
+                save_inventory(transaction_history)
+
             case "6":
+                print("\nSaving inventory before exit...")
                 save_inventory(transaction_history)
                 break
             case "_":
@@ -222,40 +159,6 @@ def main():
 
     print("Thank you for using Inventory Management System.")
     print("Program terminated.")
-
-    # print(total, transaction_history)
-    failedEntries = 0
-
-    # while True:
-    #     print(f"Total Units: {total}", f"Transaction History: {transaction_history}\n")
-    #     itemname, failedEntries = get_valid_input(failedEntries, "item")
-
-    #     if check_quit(itemname):
-    #         generate_report(total, failedEntries)
-    #         save_inventory(total, transaction_history)
-    #         break
-
-    #     quantity, failedEntries = get_valid_input(failedEntries)
-
-    #     if check_quit(quantity):
-    #         generate_report(total, failedEntries)
-    #         save_inventory(total, transaction_history)
-    #         break
-
-    #     print(f"New Order Added:\nIndex: {index}, Item: {itemname}, Quantity: {quantity}\n")
-
-    #     total = process_delivery(total, quantity)
-
-    #     transaction_history.append((index, itemname, quantity))
-
-    #     index += 1
         
-    #     # print(f"Transaction History: {transaction_history}\n")
-
-    #     for tid, item, qty in transaction_history:
-    #         print(f"Transaction ID: {tid}, Item: {item}, Quantity: {qty}")
-
-        
-
 if __name__ == "__main__":
     main()
