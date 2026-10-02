@@ -16,10 +16,8 @@ def load_inventory():
     except FileNotFoundError:
         return history
     print(history)
-    items = history[0]
-    print(items)
     print("Inventory loaded successfully." )
-    return items
+    return history
 
 def save_inventory(history):
     """
@@ -29,7 +27,7 @@ def save_inventory(history):
     with open(INVENTORY_FILE, "w") as file:
         contents = {}
         contents["history"] = history
-        print(contents)
+        # print(contents)
         json.dump(contents, file)
     print(f"Order successfully saved to {os.path.basename(INVENTORY_FILE)}")
 
@@ -132,12 +130,47 @@ def add_product(transaction_history):
     product_name = input("Product Name: ")
     product_price = float(input("Price: "))
     product_stock = int(input("Stock Quantity: "))
-    transaction_history["id"] = product_id
-    transaction_history["name"] = product_name
-    transaction_history["price"] = product_price
-    transaction_history["stock"] = product_stock
+    transaction_history.append({
+        "id": product_id,
+        "name": product_name,
+        "price": f"{product_price:.2f}",
+        "stock": product_stock
+    })
+
     print(f"\nProduct added successfully!\n")
     return transaction_history
+
+def update_stock(transaction_history):
+    """
+    Updates the stock quantity of an existing product.
+    """
+    product_id = input("\nEnter Product ID to update stock: ")
+    for item in transaction_history:
+        if item['id'] == product_id:
+            print("\nProduct Found:")
+            print(f"Name: {item['name']}")
+            print(f"Current Stock: {item['stock']}\n")
+            new_stock = int(input(f"Enter new stock quantity for {item['name']}: "))
+            item['stock'] = new_stock
+            print(f"Stock updated successfully for {item['name']}.\n")
+            return
+    print("Product not found.\n")
+
+def search_product(transaction_history):
+    """
+    Searches for a product by id in the transaction history.
+    """
+    product_id = input("\nEnter Product id to search: ")
+    found_products = [item for item in transaction_history if item['id'] == product_id]
+    
+    if found_products:
+        print("\nProduct(s) Found:")
+        print("----------------------")
+        for item in found_products:
+            print(f"ID: {item['id']}\nName: {item['name']}\nPrice: {item['price']}\nStock: {item['stock']}")
+        print("----------------------\n")
+    else:
+        print("Product not found.\n")
 
 def show_menu():
     """
@@ -174,19 +207,21 @@ def main():
                 display_all_products(transaction_history)
             case "2":
                 add_product(transaction_history)
-                print(transaction_history)
+                # print(transaction_history)
             case "3":
-                pass
+                update_stock(transaction_history)
             case "4":
-                pass
+                search_product(transaction_history)
             case "5":
                 pass    
             case "6":
                 save_inventory(transaction_history)
                 break
-            
-        print("Thank you for using Inventory Management System.")
-        print("Program terminated.")
+            case "_":
+                print("Invalid option. Enter a valid option.\n")
+
+    print("Thank you for using Inventory Management System.")
+    print("Program terminated.")
 
     # print(total, transaction_history)
     failedEntries = 0
