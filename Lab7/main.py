@@ -58,7 +58,6 @@ def build_inventory(history):
     """
     inventory = Inventory()
     for product_data in history:
-        # check that the value of weight or download_size is not None before creating the product
         if "weight" in product_data and product_data["weight"] is not None:
             product = PhysicalProduct(product_data["id"], product_data["name"], product_data["price"], product_data["stock"], product_data["weight"])
         elif "download_size" in product_data and product_data["download_size"] is not None:
