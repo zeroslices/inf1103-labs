@@ -65,8 +65,6 @@ class PhysicalProduct(Product):
     def __init__(self, product_id, name, price, stock, weight):
         """Initializes a PhysicalProduct instance with the given attributes."""
         super().__init__(product_id, name, price, stock)
-        if weight < 0:
-            raise ValueError("Weight cannot be negative.")
         self.__weight = weight
 
     def get_weight(self):
