@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from supplier import Supplier
 # from can_be_shipped import CanBeShipped
 
-@abstractmethod
 
 
 class Product(ABC):
@@ -18,7 +17,7 @@ class Product(ABC):
     def __init__(self, product_id, name, price, stock, supplier: Supplier):
         """Initializes a Product instance with the given attributes."""
         if price <= 0:
-            raise ValueError("A Product price must be greatre than zero.")
+            raise ValueError("A Product price must be greater than zero.")
         if not isinstance(stock, int) or stock < 0:
             raise ValueError("A product's stock quantity cannot be negative.")
         self.__product_id = product_id

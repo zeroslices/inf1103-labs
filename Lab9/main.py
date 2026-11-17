@@ -29,7 +29,7 @@ def load_products(path: str, inventory: Inventory, supplier: Supplier) -> None:
         for i, record in enumerate(records, start=1):
             try:
                 if inventory.search_product(record["id"]):
-                    raise ValueError(f"duplicate product ID {record["id"]}")
+                    raise ValueError(f"duplicate product ID {record['id']}")
                 product = ProductFactory.create(
                     record["product_type"], record["id"], record["name"],
                            float(record["price"]), int(record["stock"]), supplier,
@@ -136,7 +136,7 @@ def main():
     print("========================================\n\n")
     
     inventory = Inventory()
-    load_products(DATA_DIR, inventory, supplier=None)
+    load_products(INVENTORY_FILE, inventory, supplier=None)
 
     while True:
 
